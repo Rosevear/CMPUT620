@@ -1,0 +1,115 @@
+%Initially, there are cars at various locations, and there is a 
+%ferry at some location. The ferry can only transport one car at
+%a time and the goal is to transport all cars to their 
+%destinations. No paralell actions are allowed.
+
+
+#show board/3.
+#show move/4.
+#show unboard/3.
+
+time(0..steps).
+
+% There is nothing wrong to have domain predicates. I first wrote
+% these predicates and then commented some out. Not all of them can be
+% removed. E.g., if T+1 appears in the head, it is like having a function
+% symbol in the head, which could result in an infinite grounding process. 
+
+
+{board(Car,Loc,T)} :-
+%       car(Car), location(Loc), time(T),
+	empty(ferry,T),
+	at(Car,Loc,T),
+	at(ferry,Loc,T),
+	not moving(ferry,Loc,T),
+	not goal(T).
+
+empty(ferry,T):-
+        car(Car), time(T),
+	not in(ferry,Car,T).
+
+in(ferry,Car,T+1):-
+%       car(Car), location(Loc), time(T),
+	board(Car,Loc,T).
+
+at(ferry,Loc,T+1):-
+%       car(Car), location(Loc), time(T),
+	board(Car,Loc,T),
+	at(ferry,Loc,T).
+
+affected(Car,T):-    %Car is affected by board
+%       car(Car), location(Loc), time(T),
+	board(Car,Loc,T).   
+
+{unboard(Car,Loc,T)}:-
+%       car(Car), location(Loc), time(T),
+	in(ferry,Car,T),
+	at(ferry,Loc,T),
+	not moving(ferry,Loc,T),
+	not goal(T).
+
+at(Car,Loc,T+1):-
+%       car(Car), location(Loc),
+        time(T),
+	unboard(Car,Loc,T).
+
+at(ferry,Loc,T+1):-
+        car(Car), location(Loc), time(T),
+	unboard(Car,Loc,T),
+	at(ferry,Loc,T).
+
+affected(Car,T):-     %Car is affected by unboard
+        car(Car), location(Loc), time(T),
+	unboard(Car,Loc,T).
+
+{move(ferry,From,To,T)}:-
+%       car(Car), location(From),time(T),
+	location(To), 
+	at(ferry,From,T),
+	From != To,
+	not goal(T).
+
+moving(ferry,From,T):-     %ferry is affected by move
+%       location(From), location(To),
+%       time(T),
+	move(ferry,From,To,T),
+	From != To.
+
+at(ferry,To,T+1):-
+%       location(From), location(To),
+	time(T),
+	at(ferry,From,T),
+	move(ferry,From,To,T).
+
+%frame axioms
+at(ferry,Loc,T+1):-
+        location(Loc), time(T),
+	at(ferry,Loc,T),
+	not moving(ferry,Loc,T).
+
+at(Car,Loc,T+1):-
+%       car(Car), location(Loc),
+	time(T),
+	not board(Car,Loc,T),
+	at(Car,Loc,T).
+
+in(ferry,Car,T+1):-
+%       car(Car),
+	time(T),
+	not affected(Car,T),
+	in(ferry,Car,T).
+
+% What constraints should be added? 
+% Please add more constraints to make it work
+% e.g., no parallel board/unboard at the same T.
+
+goal(T+1):- time(T), goal(T).  
+     %once goal is achieved, goal(T) is true for all T > k. 
+
+goal :- time(T),  goal(T).
+
+:- not goal.
+
+
+
+

@@ -1,0 +1,133 @@
+Maximum Clique
+instance1 1
+Optimization: 180
+OPTIMUM FOUND
+
+Models       : 46
+  Optimum    : yes
+Optimization : 180
+Calls        : 1
+Time         : 473.781s (Solving: 473.47s 1st Model: 0.00s Unsat: 4.05s)
+CPU Time     : 452.062s
+
+instance 2
+Models       : 45
+  Optimum    : yes
+Optimization : 181
+Calls        : 1
+Time         : 1436.476s (Solving: 1436.19s 1st Model: 0.00s Unsat: 10.64s)
+CPU Time     : 1360.179s
+
+instance 3
+Optimization: 181
+OPTIMUM FOUND
+
+Models       : 45
+  Optimum    : yes
+Optimization : 181
+Calls        : 1
+Time         : 1032.757s (Solving: 1032.43s 1st Model: 0.00s Unsat: 1.15s)
+CPU Time     : 1011.235s
+
+instance 4
+Optimization: 187
+OPTIMUM FOUND
+
+Models       : 39
+  Optimum    : yes
+Optimization : 187
+Calls        : 1
+Time         : 986.242s (Solving: 985.92s 1st Model: 0.00s Unsat: 9.15s)
+CPU Time     : 975.955s
+
+instance 5
+Optimization: 201
+OPTIMUM FOUND
+
+Models       : 50
+  Optimum    : yes
+Optimization : 201
+Calls        : 1
+Time         : 955.745s (Solving: 955.39s 1st Model: 0.00s Unsat: 27.95s)
+CPU Time     : 942.816s
+
+Tower Of Hanoi
+instance 1
+SATISFIABLE
+
+Models       : 1+
+Calls        : 1
+Time         : 3.378s (Solving: 3.10s 1st Model: 3.09s Unsat: 0.00s)
+CPU Time     : 3.370s
+
+instance 2
+SATISFIABLE
+Models       : 1+
+Calls        : 1
+Time         : 11.552s (Solving: 11.30s 1st Model: 11.30s Unsat: 0.00s)
+CPU Time     : 11.495s
+
+instance3
+SATISFIABLE
+Models       : 1+
+Calls        : 1
+Time         : 23.324s (Solving: 22.99s 1st Model: 22.99s Unsat: 0.00s)
+CPU Time     : 23.247s
+
+instance 4
+SATISFIABLE
+
+Models       : 1+
+Calls        : 1
+Time         : 1998.913s (Solving: 1998.49s 1st Model: 1998.49s Unsat: 0.00s)
+CPU Time     : 1333.716s
+
+instance 5
+SATISFIABLE
+
+Models       : 1+
+Calls        : 1
+Time         : 959.298s (Solving: 958.85s 1st Model: 958.84s Unsat: 0.00s)
+CPU Time     : 935.051s
+
+Knights Tour
+instance 1
+UNSATISFIABLE
+
+Models       : 0
+Calls        : 1
+Time         : 4.556s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 4.434s
+
+instance 2
+UNSATISFIABLE
+
+Models       : 0
+Calls        : 1
+Time         : 5.632s (Solving: 0.01s 1st Model: 0.00s Unsat: 0.01s)
+CPU Time     : 5.471s
+
+instance 3
+UNKNOWN
+
+INTERRUPTED  : 1
+Models       : 0+
+Calls        : 1
+Time         : 32645.062s (Solving: 32638.24s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 17916.086s
+
+instance 4
+UNSATISFIABLE
+
+Models       : 0
+Calls        : 1
+Time         : 3.981s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 3.868s
+
+instance 5
+UNSATISFIABLE
+
+Models       : 0
+Calls        : 1
+Time         : 4.634s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 4.619s

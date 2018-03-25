@@ -1,0 +1,79 @@
+% Initially, there are cars at various locations, and there is a
+% ferry at some location. The ferry can only transport one car at
+% a time and the goal is to transport all cars to their
+% destinations. No paralell actions are allowed.
+
+#show board/3.
+#show move/4.
+#show unboard/3.
+%#show at/3.
+%#show in/3.
+%#show moving/3.
+
+time(0..steps).
+
+%ACTIONS
+%TODO: Need to modify so that what we care about is not the emptiness, but the load is < 2
+{board(Car,Loc,T)} :- car(Car), location(Loc), time(T), empty(ferry,T), at(Car,Loc,T),
+	at(ferry,Loc,T), not moving(ferry,Loc,T), not goal(T).
+
+{unboard(Car,Loc,T)} :- car(Car), location(Loc), time(T), in(ferry,Car,T),
+	at(ferry,Loc,T), not moving(ferry,Loc,T), not goal(T).
+
+{move(ferry,From,To,T)} :- car(Car),location(From), time(T), location(To),
+	at(ferry,From,T), From != To, not goal(T).
+
+
+%EFFECTS
+%If a car unboards at a location, it is now at that location
+at(Car,Loc,T+1):- car(Car), location(Loc), time(T), unboard(Car,Loc,T).
+
+%If a car boards the ferry at time T, it is in the ferry at time T + 1
+in(ferry,Car,T+1):-  car(Car), location(Loc), time(T), at(ferry,Loc,T), board(Car,Loc,T).
+
+%If a ferry moves from a location at time T, it is at its destination at the next time step
+at(ferry,To,T+1):- location(To), location(From), time(T), at(ferry,From,T), move(ferry,From,To,T).
+
+empty(ferry,T):- time(T), not occupied(ferry,T).
+occupied(ferry,T) :- in(_,_,T).
+
+
+%FRAME SIGNALS
+%If the car unboards from the ferry, it has impacted its own location
+affected0(Car,T) :- time(T), car(Car), location(Loc), unboard(Car,Loc,T).
+
+%If a ferry moves from its location at time T it is now moving
+moving(ferry,From,T):-  location(From),location(Loc), time(T), at(ferry,From,T),
+	move(ferry,From,Loc,T).
+
+%FRAME AXIOMS
+%If a car is at a location and does not board it remains at that location
+at(Car,Loc,T+1):- car(Car), location(Loc), time(T), at(Car,Loc,T), not board(Car,Loc,T).
+
+%If a ferry is at a location at time T, and is not moving, then it stays there at time T + 1
+at(ferry,Loc,T+1):- location(Loc), time(T), at(ferry,Loc,T), not moving(ferry,Loc,T).
+
+%If a ferry is at a location and a car unboards at that location, the ferry is still there at the next time step
+at(ferry,Loc,T+1):- car(Car), location(Loc), time(T), at(ferry,Loc,T), unboard(Car,Loc,T).
+
+%If the ferry is at a location at time T, and a car boards, the ferry is still at the location at the next time step
+at(ferry,Loc,T+1):- car(Car), location(Loc), time(T), at(ferry,Loc,T), board(Car,Loc,T).
+
+%If a car is in the ferry, and does not unboard, it is still in the ferry at the next time step
+in(ferry,Car,T+1):- car(Car), time(T), in(ferry,Car,T), not affected0(Car,T).
+
+%CONSTRAINTS
+%The ferry cannot move to 2 different locations at the same time step
+:- time(T),location(X),location(Y),X!=Y,
+   move(ferry,Loc,X,T), move(ferry,Loc,Y,T).
+
+%Only 1 car can board (it has to be the same car): TODO: Update to say that only N cars can board
+:- time(T),car(X),car(Y),X!=Y,
+   board(X,Loc,T), board(Y,Loc,T).
+
+%GOALS
+goal(T+1):-  time(T), goal(T).
+     %once goal is achieved, goal(T) is true for all T > k.
+
+goal :- time(T), goal(T).
+:- not goal.

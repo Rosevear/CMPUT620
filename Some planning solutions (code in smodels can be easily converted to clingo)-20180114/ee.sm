@@ -1,0 +1,112 @@
+% There is an elevator which transports passengers from their initial    
+% floors to their goal floors. There are three types of objects: the 
+% elevator, a number of passengers, and several floors. The elevator 
+% can move up and down to any floor. When it stops at a floor, any   
+% passenger in the elevator can be unboarded, and any passenger waiting 
+% at the floor can be boarded onto the elevator. The goal of the 
+% problem is to transport all the passengers to their destination 
+% floors.
+
+
+state(0..steps).
+
+#domain person(P),state(T1),state(T2),state(T),state(T1),floor(F),floor(F1),floor(From),floor(To).
+#hide.
+#show board(P,F,T),unboard(P,F,T),stop(lift,F,T),up(lift,From,To,T),down(lift,From,To,T).
+
+
+%action board(P,F,T)
+
+{board(P,F,T)}:-
+	at(P,F,T),
+	at(lift,F,T),
+	not affected(lift,T),
+        not goal(T).
+
+
+{unboard(P,F,T)}:-
+	in(lift,P,T),
+	at(lift,F,T),
+	not affected(lift,T),
+        not goal(T).
+
+%up
+
+{up(lift,From,To,T)}:-
+	above(To,From),
+	at(lift,From,T),
+        not goal(T).
+
+
+
+{down(lift,From,To,T)}:-
+	above(From,To),
+	at(lift,From,T),
+        not goal(T).
+
+
+
+%affected
+change(P,T):-
+	board(P,F,T).
+
+change(P,T):-
+	unboard(P,F,T).
+
+affected(lift,T):-
+	down(lift,From,To,T).
+
+affected(lift,T):-
+	up(lift,From,To,T).
+
+%effects
+
+at(lift,To,T+1):-
+	down(lift,From,To,T).
+
+at(lift,To,T+1):-
+	up(lift,From,To,T).
+
+in(lift,P,T+1):-
+	board(P,F,T).
+
+at(P,F,T+1):-
+	unboard(P,F,T).
+
+%frame axioms
+
+at(P,F,T+1):-
+	not change(P,T),
+	at(P,F,T).
+
+in(lift,P,T+1):-
+	not change(P,T),
+	in(lift,P,T).
+
+at(lift,F,T+1):-
+	not affected(lift,T),
+	at(lift,F,T).
+
+
+%constraints about things that shouldn't happen
+
+:- up(lift,From,To,T), up(lift,From,To1,T), To != To1, floor(To1).
+:- up(lift,From,To,T), up(lift,From1,To,T), From != From1, floor(From1).
+
+:- down(lift,From,To,T), down(lift,From,To1,T), To != To1, floor(To1).
+:- down(lift,From,To,T), down(lift,From1,To,T), From != From1, floor(From1).
+
+:- up(lift,From,To,T), down(lift,From,To1,T), To != To1, floor(To1).
+
+
+goal(T+1):- goal(T).
+goal:- goal(T).
+
+
+
+
+
+
+
+
+

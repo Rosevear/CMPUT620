@@ -1,0 +1,88 @@
+%Initially, there are cars at various locations, and there is a 
+%ferry at some location. The ferry can only transport one car at %a time and the goal is to transport all cars to their 
+%destinations.
+
+#domain time(T),car(Car),time(T2).
+#domain location(Loc),location(Loc1),location(From),location(To).
+#hide.
+#show board(Car,Loc,T),move(ferry,From,To,T),unboard(Car,Loc,T).
+
+time(0..steps).
+
+{board(Car,Loc,T)}:-
+	empty(ferry,T),
+	at(Car,Loc,T),
+	at(ferry,Loc,T),
+	not moving(ferry,T),
+	not goal(T).
+
+empty(ferry,T):-
+	not in(ferry,Car,T).
+
+in(ferry,Car,T+1):-
+	board(Car,Loc,T).
+
+at(ferry,Loc,T+1):-
+	board(Car,Loc,T),
+	at(ferry,Loc,T).
+
+affected(Car,T):-       %Car is affected by board
+	board(Car,Loc,T).   
+
+{unboard(Car,Loc,T)}:-
+	in(ferry,Car,T),
+	at(ferry,Loc,T),
+	not moving(ferry,T),
+	not goal(T).
+
+at(Car,Loc,T+1):-
+	unboard(Car,Loc,T).
+
+at(ferry,Loc,T+1):-
+	unboard(Car,Loc,T),
+	at(ferry,Loc,T).
+
+affected(Car,T):-     %Car is affected by unboard
+	unboard(Car,Loc,T).
+
+{move(ferry,From,To,T)}:-
+	at(ferry,From,T),
+	From != To,
+	not goal(T).
+
+moving(ferry,T):-     %ferry is affected by move
+	move(ferry,From,To,T),
+	From != To.
+
+at(ferry,To,T+1):-
+	at(ferry,From,T),
+	move(ferry,From,To,T).
+
+%frame axioms
+at(ferry,Loc,T+1):-
+	at(ferry,Loc,T),
+	not moving(ferry,T).
+
+at(Car,Loc,T+1):-
+	not change(Car,T),
+	at(Car,Loc,T).
+
+in(ferry,Car,T+1):-
+	not affected(Car,T),
+	in(ferry,Car,T).
+
+% What constraints should be added? 
+% Please add more constraints to make it work.
+
+:- at(ferry,Loc,T),at(ferry,Loc1,T),Loc!=Loc1.
+
+
+goal(T+1):- goal(T).  
+     %once goal(k) is achieved, goal(T) is true for all T > k. 
+
+goal :- goal(T).
+
+
+
+
+
