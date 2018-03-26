@@ -1,13 +1,8 @@
-% Initially, there are cars at various locations, and there is a
-% ferry at some location. The ferry can only transport one car at
-% a time and the goal is to transport all cars to their
-% destinations. No paralell actions are allowed.
-
 %SHOW
 #show board/3.
 #show move/4.
 #show unboard/3.
-%#show load/3.
+#show load/3.
 %#show at/3.
 %#show in/3.
 %#show moving/3.
@@ -16,7 +11,7 @@
 %The total amount of cars that can fit in the ferry
 #const n=2.
 
-%Specify the numbers used by the load predicate based on the total amount allowed
+%Specify the numbers used by the load predicate based on the total number of cars allowed in the ferry
 num(0..n).
 
 %Specify the number of time steps in which we would like the problem to be solved
@@ -47,15 +42,23 @@ in(ferry,Car,T+1):-  car(Car), location(Loc), time(T), at(ferry,Loc,T), board(Ca
 %If a ferry moves from a location at time T, it is at its destination at the next time step
 at(ferry,To,T+1):- location(To), location(From), time(T), at(ferry,From,T), move(ferry,From,To,T).
 
-%If a car boards the ferry at time T, the number of cars in the ferry increments by 1 at the next time step
-%load(ferry,N+1,T+1) :- car(Car), location(Loc), time(T), num(N), board(Car,Loc,T), load(ferry, N, T).
-
-%If a car unboards the ferry at Time T, the number of cars in the ferry decrements by 1 at the next time step
-%load(ferry,N-1,T+1) :- car(Car), location(Loc), time(T), num(N), unboard(Car,Loc,T), load(ferry, N, T).
-
 %If there are 2 cars in the ferry at the same time, then it is full
 full(ferry,T1) :- time(T1), time(T2), T1 == T2, car(X), car(Y), X!=Y, in(ferry,X,T1), in(ferry,Y,T2).
 
+%If two cars board the ferry at time t, the number of cars in the ferry increments by 2
+load(ferry,N+2,T+1) :- 2{car(X) : car(X), location(Loc), board(X,Loc,T)}2, time(T), num(N), load(ferry,N,T).
+
+%If two cars unboard the ferry at time t, the number of cars in the ferry decrements by 2
+load(ferry,N-2,T+1) :- 2{car(X) : car(X), location(Loc), unboard(X,Loc,T)}2, time(T), num(N), load(ferry,N,T).
+
+%If a car boards the ferry at time T, the number of cars in the ferry increments by 1 at the next time step
+load(ferry,N+1,T+1) :-  1{car(X) : car(X), location(Loc), board(X,Loc,T)}1, 0{car(X) : car(X), location(Loc), unboard(X,Loc,T)}0, time(T), num(N), load(ferry,N,T).
+
+%If a car unboards the ferry at Time T, the number of cars in the ferry decrements by 1 at the next time step
+load(ferry,N-1,T+1) :- 1{car(X) : car(X), location(Loc), unboard(X,Loc,T)}1, 0{car(X) : car(X), location(Loc), board(X,Loc,T)}0, time(T), num(N), load(ferry,N,T).
+
+%If a car unboards the ferry at Time T and another boards, the number of cars in the ferry remains the same for the next time step
+load(ferry,N,T+1) :- 1{car(X) : car(X), location(Loc), unboard(X,Loc,T)}1, 1{car(X) : car(X), location(Loc), board(X,Loc,T)}1, time(T), num(N), load(ferry,N,T).
 
 %FRAME SIGNALS
 %If the car unboards from the ferry, it has been affected
@@ -65,11 +68,6 @@ affected0(Car,T) :- time(T), car(Car), location(Loc), unboard(Car,Loc,T).
 moving(ferry,From,T):-  location(From),location(Loc), time(T), at(ferry,From,T),
 	move(ferry,From,Loc,T).
 
-%If a car unboards the ferry, it has impacted the ferry load
-%loadchange(Car,T) :- time(T), car(Car), location(Loc), unboard(Car,Loc,T).
-
-%If a car boards the ferry, it has impacted the ferry load
-%loadchange(Car,T) :- time(T), car(Car), location(Loc), board(Car,Loc,T).
 
 %FRAME AXIOMS
 %If a car is at a location and does not board it remains at that location
@@ -87,11 +85,8 @@ at(ferry,Loc,T+1):- car(Car), location(Loc), time(T), at(ferry,Loc,T), board(Car
 %If a car is in the ferry, and does not unboard, it is still in the ferry at the next time step
 in(ferry,Car,T+1):- car(Car), time(T), in(ferry,Car,T), not affected0(Car,T).
 
-%If the car is full at time T, and the car does not unboard any cars, it is full at time T + 1
-%full(ferry,T+1) :- time(T), full(ferry,T).
-
 %If there is no load change at time T, the load is the same at time T + 1
-%load(ferry, N, T + 1) :-  car(Car), time(T), num(N), load(ferry, N, T), not loadchange(Car, T).
+load(ferry,N,T+1) :-  0{car(X) : car(X), location(Loc), unboard(X,Loc,T)}0, 0{car(X) : car(X), location(Loc), board(X,Loc,T)}0, time(T), num(N), load(ferry,N,T).
 
 
 %CONSTRAINTS
@@ -107,9 +102,7 @@ in(ferry,Car,T+1):- car(Car), time(T), in(ferry,Car,T), not affected0(Car,T).
 %Only 2 cars can be in the ferry at the same time
 :- time(T), car(X), car(Y), car(Z), X!=Y,  X!=Z, Y!=Z, in(ferry,X,T), in(ferry,Y,T), in(ferry,Z,T).
 
-%GOALS
+%GOAL
 goal(T+1):-  time(T), goal(T).
-     %once goal is achieved, goal(T) is true for all T > k.
-
 goal :- time(T), goal(T).
 :- not goal.
