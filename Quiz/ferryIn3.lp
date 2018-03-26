@@ -1,4 +1,4 @@
-#const steps=19.
+#const steps=13.
 
 car(car1).
 car(car2).

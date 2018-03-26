@@ -1,4 +1,4 @@
-#const steps=6.   %solved if no further constraints
+#const steps=5.   %solved if no further constraints
 
 car(car1;car2).
 
